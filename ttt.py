@@ -13,12 +13,11 @@ class Board():
     def update(self,num,player,single=False):
         if self.cells[num-1] != " ":
             if single == True:
-                return x_move(single)
+                return player_move("X",single)
             if player == "X":
-                return x_move()
+                return player_move("X",single)
             else:
-                return o_move()
-
+                return player_move("O",single)
         else:
             self.cells[num-1] = player
             return
@@ -72,6 +71,26 @@ class Board():
 
 
     def ai(self,player):
+        c = [0,0,None]
+
+        for row in [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]:
+            for n in row:
+                if self.cells[n] == "X":
+                    c[0] += 1
+                if self.cells[n] == "O":
+                    c[1] += 1
+                else:
+                    if self.cells[n] == " ":
+                        c[2] = n+1
+
+            if (c[0] == 2 or c[1] == 2) and c[2] != None:
+                return self.update(c[2],player)
+
+            c = [0,0,None]
+
+
+
+
         if self.cells[4] == " ":
             return self.update(5,player)
 
@@ -83,6 +102,9 @@ class Board():
             for n in range(9,0,-1):
                 if self.cells[n-1]==" ":
                     return self.update(n,player)
+
+
+
 
     def reset(self):
         self.cells = [" " for x in range(9)]
@@ -110,14 +132,13 @@ def main():
             break
 
     while True:
-
         refresh()
         if os.name!="nt":
             os.system("clear")
-        x_move(single)
+        player_move("X",single)
         refresh()
         board.result()
-        o_move(single)
+        player_move("O",single)
         board.result()
 
 
@@ -135,13 +156,16 @@ def repeat():
             repeat = input("Enter Y if you want play again or N to quit > ")
             continue
 
-def x_move(single=False):
+def player_move(player,single):
+    if single == True and player == "O":
+        return board.ai("O")
 
     if " " not in board.cells:
         print("\n\t\t\t       Tie!")
         return repeat()
     print("\n\t\t\t|Player X turn|\n")
-    x = (input("Enter number from 1-9, depending on which you want to place your X > "))
+
+    x = (input("Enter number from 1-9, depending on which you want to place your {} > ".format(player)))
     while True:
         try:
             x = int(x)
@@ -151,30 +175,12 @@ def x_move(single=False):
                 x = int("error")
         except:
             print("Wrong number entered")
-            x = (input("Enter number from 1-9, depending on which you want to place your X > "))
+            x = (input("Enter number from 1-9, depending on which you want to place your {} > ".format(player)))
+    if player == "X":
+        board.update(x, "X") if single == False else board.update(x, "X",True)
+    else:
+        board.update(x, "O")
 
-    board.update(x, "X") if single == False else board.update(x, "X",True)
-
-def o_move(single):
-    if single == True:
-        return board.ai("O")
-    if " " not in board.cells:
-        print("\n\t\t\t       Tie!")
-        return repeat()
-    print("\n\t\t\t|Player O turn|\n")
-    o = (input("Enter number from 1-9, depending on which you want to place your O > "))
-    while True:
-        try:
-            o = int(o)
-            if o >= 1 and o <= 9:
-                break
-            else:
-                o = int("error")
-        except:
-            print("Wrong number entered")
-            x = (input("Enter number from 1-9, depending on which you want to place your O > "))
-
-    board.update(o, "O")
 
 if __name__ == "__main__":
     board = Board()
