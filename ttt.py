@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-import os,sys
+import os
+import sys
 from builtins import input
 from random import randint
 from colorama import init
 from colorama import Fore
+
 init()
 
 class Board():
